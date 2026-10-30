@@ -2,15 +2,22 @@ package com.josh.aitutor.services;
 
 import com.josh.aitutor.models.Deck;
 import com.josh.aitutor.models.Flashcard;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Service
 public class DeckService {
-    private Map<String, Deck> database = new HashMap<>();
+    private Map<String, Deck> database;
 
-    private AISupplier aiSupplier = new AISupplier();
+    private final AISupplier aiSupplier;
+
+    public DeckService(AISupplier aiSupplier) {
+        this.database = new HashMap<>();
+        this.aiSupplier = aiSupplier;
+    }
 
     public Deck getDeck(String topic) {
         if (database.containsKey(topic)) {

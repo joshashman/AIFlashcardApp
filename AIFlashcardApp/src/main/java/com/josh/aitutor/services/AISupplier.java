@@ -1,10 +1,12 @@
 package com.josh.aitutor.services;
 
 import com.josh.aitutor.models.Flashcard;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.ArrayList;
 
+@Service
 public class AISupplier {
 
     public List<Flashcard> generateCards(String topic){
