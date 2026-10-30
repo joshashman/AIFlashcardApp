@@ -6,12 +6,14 @@ public class Flashcard {
     private String englishWord;
     private String sampleSentence;
 
+    // constructor
     public Flashcard(String swedishWord, String englishWord, String sampleSentence) {
         this.swedishWord = swedishWord;
         this.englishWord = englishWord;
         this.sampleSentence = sampleSentence;
     }
 
+    // getters
     public String getSwedishWord(){
         return swedishWord;
     };
@@ -23,4 +25,17 @@ public class Flashcard {
     public String getSampleSentence(){
         return sampleSentence;
     };
+
+    // setters
+    public void setSwedishWord(String newWord){
+        this.swedishWord = newWord;
+    }
+
+    public void setEnglishWord(String newWord){
+        this.englishWord = newWord;
+    }
+
+    public void setSampleSentence(String newSentence){
+        this.sampleSentence = newSentence;
+    }
 }
