@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.ArrayList;
 
+// Spring boot will create only one supplier and use it if called elsewhere
 @Service
 public class AISupplier {
 

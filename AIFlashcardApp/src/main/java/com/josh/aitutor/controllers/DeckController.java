@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+// Signals to call this method at HTTP endpoint and return JSON to display
 @RestController
 @RequestMapping("/api/decks")
 public class DeckController {

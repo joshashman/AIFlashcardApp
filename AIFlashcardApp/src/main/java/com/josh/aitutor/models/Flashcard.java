@@ -1,10 +1,24 @@
 package com.josh.aitutor.models;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Flashcard {
+
+    // Auto generated PK id
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String swedishWord;
     private String englishWord;
     private String sampleSentence;
+
+    // Establishes child relationship
+    // Each flashcard has a deck_id FK for where it belongs
+    @ManyToOne
+    @JoinColumn(name = "deck_id")
+    private Deck deck;
 
     // constructor
     public Flashcard(String swedishWord, String englishWord, String sampleSentence) {
