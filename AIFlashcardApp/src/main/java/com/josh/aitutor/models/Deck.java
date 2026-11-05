@@ -12,7 +12,7 @@ public class Deck {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String topicName;
+    private String topic;
     private boolean isDefault;
 
     // Database link handled by deck variable in flashcard table.
@@ -22,16 +22,16 @@ public class Deck {
     private List<Flashcard> flashcardList;
 
     // constructor
-    public Deck(String topicName, List<Flashcard> flashcardList) {
-        this.topicName = topicName;
+    public Deck(String topic, List<Flashcard> flashcardList) {
+        this.topic = topic;
         this.flashcardList = flashcardList;
     }
 
     // getters
     public Long getId() { return id; }
 
-    public String getTopicName() {
-        return topicName;
+    public String getTopic() {
+        return topic;
     }
 
     public List<Flashcard> getFlashcardList() {
@@ -42,7 +42,7 @@ public class Deck {
 
     // setters
     public void setTopicName(String newName){
-        this.topicName = newName;
+        this.topic = newName;
     }
 
     public void setIsDefault(boolean newDefault) { this.isDefault = newDefault; }

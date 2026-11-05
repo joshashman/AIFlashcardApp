@@ -14,6 +14,7 @@ public class User {
 
     private String email;
 
+    // constructor
     public User(String email){
         this.email = email;
     }

@@ -12,6 +12,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    // DI constructor
     public UserService(UserRepository userRepository){
         this.userRepository = userRepository;
     }

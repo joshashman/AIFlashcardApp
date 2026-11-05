@@ -2,10 +2,7 @@ package com.josh.aitutor.controllers;
 
 import com.josh.aitutor.models.Deck;
 import com.josh.aitutor.services.DeckService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 // Signals to call this method at HTTP endpoint and return JSON to display
 @RestController
@@ -18,8 +15,8 @@ public class DeckController {
     }
 
     @GetMapping("/{topic}")
-    public Deck getDeck(@PathVariable String topic){
-        Deck requestedDeck = deckService.getDeck(topic);
+    public Deck getDeck(@PathVariable String topic, @RequestParam Long userId){ // change requestParam once security is set up
+        Deck requestedDeck = deckService.getDeckForTopic(userId, topic);
         return requestedDeck;
     }
 }

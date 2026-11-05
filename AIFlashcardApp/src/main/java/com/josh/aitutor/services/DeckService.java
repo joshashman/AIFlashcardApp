@@ -25,30 +25,62 @@ public class DeckService {
         this.aiSupplier = aiSupplier;
     }
 
-    // TO DO !!!!! UNFINISHED
-    // Finds required deck by topic, if exists will load, if not will call AISupplier to create a deck
-    public Deck getDeck(Long userId, String topic) {
+    public Deck getDeckForTopic(Long userId, String topic){
         User user = userRepository.findById(userId).orElseThrow();
 
-        List<Long> exclusionList = new ArrayList<>();
+        List<Long> excludedDecks = new ArrayList<>();
+        for (Deck deck : user.getStudiedDecks()){
+            excludedDecks.add(deck.getId());
+        }
+
+        Optional<Deck> possibleDeck = deckRepository.findFirstByTopicAndIdNotInOrderByIdAsc(topic, excludedDecks);
+
+        if (possibleDeck.isEmpty()){
+            // throw exception
+        }
+        return possibleDeck.get();
+    }
+
+    public Deck generateDeckForTopic(Long userId, String topic) {
+        User user = userRepository.findById(userId).orElseThrow();
+
+        List<String> excludedWords = new ArrayList<>();
+
+        for (Deck deck : user.getStudiedDecks()){
+            for (Flashcard card : deck.getFlashcardList()){
+                excludedWords.add(card.getSwedishWord());
+            }
+        }
+
+        String promptExclusionString = String.join(", ", excludedWords);
+        return createNewDeckUsingAI(topic, promptExclusionString);
+    }
+
+
+    // Finds required deck by topic, if exists will load, if not will call AISupplier to create a deck
+    /*public Deck getDeck(Long userId, String topic) {
+        User user = userRepository.findById(userId).orElseThrow();
+
+        List<Long> exclusionList = new ArrayList<>(); // exclude the user's studied decks
         for (Deck deck : user.getStudiedDecks()) {
             exclusionList.add(deck.getId());
         }
 
+        // find next deck
         Optional<Deck> possibleDeck = deckRepository.findFirstByTopicAndIdNotInOrderByIdAsc(topic, exclusionList);
 
         if (possibleDeck.isPresent()) {
-            return possibleDeck.get();
-        } else {
+            return possibleDeck.get(); // study that deck if it exists
+        } else { // if it doesn't exist, prompt LLM to generate a new deck for the topic
             List<String> excludedWords = new ArrayList<>();
             for (Deck deck : user.getStudiedDecks()){
                 for (Flashcard card : deck.getFlashcardList()){
-                    excludedWords.add(card.getSwedishWord());
+                    excludedWords.add(card.getSwedishWord()); // exclude studied words to prevent duplicates
                 }
             }
 
+            // format excluded words for LLM prompt
             String promptExclusionString = String.join(", ", excludedWords);
             return createNewDeckUsingAI(topic, promptExclusionString);
-        }
-    }
+        } */
 }
