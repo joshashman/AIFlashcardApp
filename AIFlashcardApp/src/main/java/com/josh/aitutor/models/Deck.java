@@ -13,7 +13,6 @@ public class Deck {
     private Long id;
 
     private String topic;
-    private boolean isDefault;
 
     // Database link handled by deck variable in flashcard table.
     // Cascade binds the card to the deck, and auto inserts them.
@@ -27,6 +26,15 @@ public class Deck {
         this.flashcardList = flashcardList;
     }
 
+    // empty no-args constructor
+    public Deck(){
+
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "creator_id")
+    private User creator;
+
     // getters
     public Long getId() { return id; }
 
@@ -38,13 +46,18 @@ public class Deck {
         return flashcardList;
     }
 
-    public boolean getIsDefault() { return isDefault; }
+    public User getCreator() { return creator;}
 
     // setters
     public void setTopicName(String newName){
         this.topic = newName;
     }
 
-    public void setIsDefault(boolean newDefault) { this.isDefault = newDefault; }
+    public void setFlashcards(List<Flashcard> newCards){
+        this.flashcardList = newCards;
+    }
 
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
 }

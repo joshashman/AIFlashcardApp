@@ -3,6 +3,7 @@ package com.josh.aitutor.repositories;
 import com.josh.aitutor.models.Deck;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,4 +18,7 @@ public interface DeckRepository extends JpaRepository<Deck,Long>{
 
     @Query("SELECT DISTINCT d.topic FROM Deck d") // manual query to return Strings not decks
     List <String> findDistinctTopics();
+
+    @Query("SELECT f.englishWord FROM Deck d JOIN d.flashcardList f WHERE d.topic = :topic")
+    List<String> findExistingWordsByTopic(@Param("topic") String topic);
 }

@@ -5,6 +5,7 @@ import com.josh.aitutor.models.Flashcard;
 import com.josh.aitutor.models.User;
 import com.josh.aitutor.repositories.DeckRepository;
 import com.josh.aitutor.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -36,51 +37,52 @@ public class DeckService {
         Optional<Deck> possibleDeck = deckRepository.findFirstByTopicAndIdNotInOrderByIdAsc(topic, excludedDecks);
 
         if (possibleDeck.isEmpty()){
-            // throw exception
+            return generateDeckForTopic(userId, topic);
         }
         return possibleDeck.get();
     }
 
+    @Transactional
     public Deck generateDeckForTopic(Long userId, String topic) {
-        User user = userRepository.findById(userId).orElseThrow();
+        if (!topic.matches("^[a-zA-Z\\s]{2,30}$")) { // make sure entered topic is only made up of lower or uppercase English characters between 2 and 30 characters long.
+            throw new IllegalArgumentException("Topic must be a short English word or phrase.");
+        }
 
-        List<String> excludedWords = new ArrayList<>();
+        String[] words = topic.trim().split("\\s+"); // trim accidental spaces and split into words
+        StringBuilder formattedTopicBuilder = new StringBuilder();
 
-        for (Deck deck : user.getStudiedDecks()){
-            for (Flashcard card : deck.getFlashcardList()){
-                excludedWords.add(card.getSwedishWord());
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                String firstLetter = word.substring(0, 1).toUpperCase(); // capitalise first letter
+                String restOfWord = word.substring(1).toLowerCase(); // rest of word lower case
+
+                formattedTopicBuilder.append(firstLetter).append(restOfWord).append(" "); // add to topic builder with a space
             }
         }
 
-        String promptExclusionString = String.join(", ", excludedWords);
-        return createNewDeckUsingAI(topic, promptExclusionString);
+        String standardisedTopic = formattedTopicBuilder.toString().trim(); // trim off final trailing space
+
+        String promptExclusionString = buildTopicExclusionString(standardisedTopic);
+
+        List<Flashcard> newCards = aiSupplier.generateFlashcards(standardisedTopic, promptExclusionString);
+
+        Deck newDeck = new Deck();
+        newDeck.setTopicName(standardisedTopic);
+
+        for (Flashcard card : newCards) {
+            card.setDeck(newDeck);
+        }
+        newDeck.setFlashcards(newCards);
+
+        User creator = userRepository.findById(userId).orElseThrow();
+        newDeck.setCreator(creator);
+
+        return deckRepository.save(newDeck);
     }
 
-
-    // Finds required deck by topic, if exists will load, if not will call AISupplier to create a deck
-    /*public Deck getDeck(Long userId, String topic) {
-        User user = userRepository.findById(userId).orElseThrow();
-
-        List<Long> exclusionList = new ArrayList<>(); // exclude the user's studied decks
-        for (Deck deck : user.getStudiedDecks()) {
-            exclusionList.add(deck.getId());
-        }
-
-        // find next deck
-        Optional<Deck> possibleDeck = deckRepository.findFirstByTopicAndIdNotInOrderByIdAsc(topic, exclusionList);
-
-        if (possibleDeck.isPresent()) {
-            return possibleDeck.get(); // study that deck if it exists
-        } else { // if it doesn't exist, prompt LLM to generate a new deck for the topic
-            List<String> excludedWords = new ArrayList<>();
-            for (Deck deck : user.getStudiedDecks()){
-                for (Flashcard card : deck.getFlashcardList()){
-                    excludedWords.add(card.getSwedishWord()); // exclude studied words to prevent duplicates
-                }
-            }
-
-            // format excluded words for LLM prompt
-            String promptExclusionString = String.join(", ", excludedWords);
-            return createNewDeckUsingAI(topic, promptExclusionString);
-        } */
+    // Build exclusion containing only words of the topic
+    private String buildTopicExclusionString(String topic){
+        List<String> excludedWords = deckRepository.findExistingWordsByTopic(topic);
+        return String.join(", ", excludedWords);
+    }
 }

@@ -27,6 +27,11 @@ public class Flashcard {
         this.sampleSentence = sampleSentence;
     }
 
+    // empty no args constructor
+    public Flashcard(){
+
+    }
+
     // getters
     public String getSwedishWord(){
         return swedishWord;
@@ -40,6 +45,10 @@ public class Flashcard {
         return sampleSentence;
     };
 
+    public Long getId() { return id; }
+
+    public Deck getDeck(){ return this.deck;}
+
     // setters
     public void setSwedishWord(String newWord){
         this.swedishWord = newWord;
@@ -52,4 +61,6 @@ public class Flashcard {
     public void setSampleSentence(String newSentence){
         this.sampleSentence = newSentence;
     }
+
+    public void setDeck(Deck deck){ this.deck = deck;}
 }
